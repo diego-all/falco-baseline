@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+
+  # Start postgres service and ensure that data is stored in a named or anonymous volume.
+  postgres_golang_crud_api:  # ServiceName
+    build:
+      context: ./database  # Specify the Dockerfile location
+      dockerfile: Dockerfile  # Dockerfile specification
+
+    # Deployment options
+    deploy:
+      mode: replicated
+      replicas: 1
+
+    image: 'mysql'  # Assign or build the service image.
+    container_name: mysql_golang_crud_api-ms
+    ports:
+      - "3306:3306"
+    restart: always  # Ensures that the container is automatically restarted in case of failures
+
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+
+    volumes:
+      #- ./db-data/postgres/:/var/lib/postgresql/data/:rw  # Anonymous volume
+      - postgres_volume:/var/lib/postgresql/data/:rw  # Named volume
+volumes:
+    postgres_volume:
+
+    # environment:     # Bad security practice (Hardcoded credentials)
+    #   POSTGRES_USER: postgres
+    #   POSTGRES_PASSWORD: password
+    #   POSTGRES_DB: e_commerce
