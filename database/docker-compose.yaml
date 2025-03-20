@@ -1,17 +1,38 @@
-version: '3.1'
+version: '3.9'
 
 services:
 
-  mysql_test:
-    image: mysql
-    # NOTE: use of "mysql_native_password" is not recommended: https://dev.mysql.com/doc/refman/8.0/en/upgrading-from-previous-series.html#upgrade-caching-sha2-password
-    # (this is just an example, not intended to be a production configuration)
-    # command: --default-authentication-plugin=mysql_native_password
-    restart: always
+  # Start postgres service and ensure that data is stored in a named or anonymous volume.
+  falco_rules_baseline_mysql_db:  # ServiceName
+    hostname: falco-mysql  # ← Aquí defines el hostname
+    build:
+      context: .  # Specify the Dockerfile location
+      dockerfile: Dockerfile  # Dockerfile specification
+
+    # Deployment options
+    deploy:
+      mode: replicated
+
+      replicas: 1
+
+    # image: 'bitnami/mysql:latest'  # Assign or build the service image.
+    image: 'bitnami/mysql:8.0.34'
+
+    container_name: falco_baseline_mysql_db
     ports:
-      - 3306:3306
-    environment:
+      - "3306:3306"
+    restart: always  # Ensures that the container is automatically restarted in case of failures
+
+    environment:     # Bad security practice (Hardcoded credentials)
       MYSQL_DATABASE: test
       MYSQL_USER: user
       MYSQL_PASSWORD: pass
       MYSQL_ROOT_PASSWORD: pass
+
+    volumes:
+      - mysql_volume:/bitnami/mysql/:rw  # Volumen persistente para MySQL
+      #- ./db-data/postgres/:/var/lib/postgresql/data/:rw  # Anonymous volume
+      # - postgres_volume:/var/lib/postgresql/data/:rw  # Named volume
+      # - mysql_data:/var/lib/mysql  # Volumen para persistencia de datos
+volumes:
+    mysql_volume:

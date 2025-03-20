@@ -29,7 +29,7 @@ VALUES
 -- Product or Item
 
 
-CREATE TABLE rulezz (
+CREATE TABLE rulezzzz (
     id CHAR(36) NOT NULL PRIMARY KEY,
     rule VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
@@ -44,6 +44,9 @@ CREATE TABLE rulezz (
     MITRE_tactic VARCHAR(100) NOT NULL,
     MITRE_technique VARCHAR(100),
     detectionSurface VARCHAR(255) NOT NULL,
+    CVE_related VARCHAR(50),
+    detectability JSON,
+    payloads JSON,
     reference JSON
 );
 
@@ -76,3 +79,12 @@ INSERT INTO rulezz (
     ]'
 );
 
+
+
+
+CREATE TABLE priority_levels (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    priority VARCHAR(20) NOT NULL,
+    hive_mind VARCHAR(20) NOT NULL,
+    description TEXT
+);
